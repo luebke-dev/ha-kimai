@@ -1,0 +1,24 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kimai Connection",
+        "description": "Enter your Kimai instance details. You can find the vacation activity IDs in Kimai under Activities.",
+        "data": {
+          "base_url": "Kimai URL",
+          "api_user": "Username",
+          "api_token": "API Token",
+          "vacation_activity_ids": "Vacation Activity IDs (comma-separated)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to Kimai instance",
+      "invalid_auth": "Invalid authentication credentials",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "This Kimai account is already configured"
+    }
+  }
+}

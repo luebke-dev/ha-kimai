@@ -1,0 +1,24 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kimai Verbindung",
+        "description": "Gib die Verbindungsdaten deiner Kimai-Instanz ein. Die Urlaubs-Activity-IDs findest du in Kimai unter Aktivitaeten.",
+        "data": {
+          "base_url": "Kimai URL",
+          "api_user": "Benutzername",
+          "api_token": "API Token",
+          "vacation_activity_ids": "Urlaubs-Activity-IDs (kommagetrennt)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zur Kimai-Instanz fehlgeschlagen",
+      "invalid_auth": "Ungueltige Anmeldedaten",
+      "unknown": "Unerwarteter Fehler"
+    },
+    "abort": {
+      "already_configured": "Dieses Kimai-Konto ist bereits konfiguriert"
+    }
+  }
+}
