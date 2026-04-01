@@ -16,10 +16,11 @@ A Home Assistant custom integration for [Kimai](https://www.kimai.org/) time tra
 
 1. Open HACS in Home Assistant
 2. Click the three dots in the top right corner
-3. Select "Custom repositories"
-4. Add this repository URL and select "Integration" as category
-5. Install "Kimai Time Tracking"
-6. Restart Home Assistant
+3. Select **Custom repositories**
+4. Enter `luebke-dev/ha-kimai` as repository and select **Integration** as category
+5. Click "Add"
+6. Search for "Kimai" in HACS and install it
+7. Restart Home Assistant
 
 ### Manual
 
