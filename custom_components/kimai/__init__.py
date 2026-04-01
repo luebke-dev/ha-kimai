@@ -12,7 +12,9 @@ from .const import (
     CONF_API_TOKEN,
     CONF_API_USER,
     CONF_BASE_URL,
+    CONF_REQUIRED_MINUTES_PER_DAY,
     CONF_VACATION_ACTIVITY_IDS,
+    DEFAULT_REQUIRED_MINUTES,
     DOMAIN,
 )
 from .coordinator import KimaiCoordinator
@@ -31,7 +33,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
 
     vacation_ids = entry.data.get(CONF_VACATION_ACTIVITY_IDS, [])
-    coordinator = KimaiCoordinator(hass, api, vacation_ids)
+    required_minutes = entry.data.get(CONF_REQUIRED_MINUTES_PER_DAY, DEFAULT_REQUIRED_MINUTES)
+    coordinator = KimaiCoordinator(hass, api, vacation_ids, required_minutes)
 
     await coordinator.async_config_entry_first_refresh()
 

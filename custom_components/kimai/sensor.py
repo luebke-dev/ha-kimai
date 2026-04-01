@@ -7,8 +7,10 @@ from datetime import date
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
+    SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -26,6 +28,9 @@ async def async_setup_entry(
     async_add_entities([
         KimaiNextDayOffSensor(coordinator, entry),
         KimaiNextWorkdaySensor(coordinator, entry),
+        KimaiTodayTrackedSensor(coordinator, entry),
+        KimaiMissingMinutesSensor(coordinator, entry),
+        KimaiOvertimeTodaySensor(coordinator, entry),
     ])
 
 
@@ -68,7 +73,6 @@ class KimaiNextDayOffSensor(KimaiBaseSensor):
         return self.coordinator.data.get("next_day_off")
 
 
-
 class KimaiNextWorkdaySensor(KimaiBaseSensor):
     """Sensor showing the next workday (weekday without vacation, excluding today)."""
 
@@ -83,3 +87,54 @@ class KimaiNextWorkdaySensor(KimaiBaseSensor):
         if not self.coordinator.data:
             return None
         return self.coordinator.data.get("next_workday")
+
+
+class KimaiTodayTrackedSensor(KimaiBaseSensor):
+    """Sensor showing tracked minutes today."""
+
+    _attr_icon = "mdi:clock-outline"
+    _attr_native_unit_of_measurement = UnitOfTime.MINUTES
+    _attr_state_class = SensorStateClass.TOTAL
+
+    def __init__(self, coordinator: KimaiCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "today_tracked", "Today Tracked")
+
+    @property
+    def native_value(self) -> int:
+        if not self.coordinator.data:
+            return 0
+        return self.coordinator.data.get("today_duration_minutes", 0)
+
+
+class KimaiMissingMinutesSensor(KimaiBaseSensor):
+    """Sensor showing missing minutes to fulfill required work time today."""
+
+    _attr_icon = "mdi:clock-alert-outline"
+    _attr_native_unit_of_measurement = UnitOfTime.MINUTES
+    _attr_state_class = SensorStateClass.TOTAL
+
+    def __init__(self, coordinator: KimaiCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "missing_minutes", "Missing Minutes Today")
+
+    @property
+    def native_value(self) -> int:
+        if not self.coordinator.data:
+            return 0
+        return self.coordinator.data.get("missing_minutes", 0)
+
+
+class KimaiOvertimeTodaySensor(KimaiBaseSensor):
+    """Sensor showing overtime minutes today."""
+
+    _attr_icon = "mdi:clock-plus-outline"
+    _attr_native_unit_of_measurement = UnitOfTime.MINUTES
+    _attr_state_class = SensorStateClass.TOTAL
+
+    def __init__(self, coordinator: KimaiCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "overtime_today", "Overtime Today")
+
+    @property
+    def native_value(self) -> int:
+        if not self.coordinator.data:
+            return 0
+        return self.coordinator.data.get("overtime_minutes", 0)

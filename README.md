@@ -6,9 +6,16 @@ A Home Assistant custom integration for [Kimai](https://www.kimai.org/) time tra
 
 ## Features
 
-- **Is Day Off** (Binary Sensor) — Indicates if today is a day off (weekend or vacation/holiday activity)
-- **Next Day Off** (Sensor) — Shows the date of the next day off (weekend or vacation)
-- **Next Workday** (Sensor) — Shows the date of the next workday (weekday without vacation)
+### Binary Sensors
+- **Is Day Off** — Indicates if today is a day off (weekend or vacation/holiday activity)
+- **Work Time Fulfilled** — Indicates if the required work time for today has been tracked
+
+### Sensors
+- **Next Day Off** — Date of the next day off (weekend or vacation, excluding today)
+- **Next Workday** — Date of the next workday (weekday without vacation, excluding today)
+- **Today Tracked** — Tracked minutes today
+- **Missing Minutes Today** — Remaining minutes to fulfill required work time (0 on days off)
+- **Overtime Today** — Overtime minutes today (on days off, all tracked time counts as overtime)
 
 ## Installation
 
@@ -32,6 +39,7 @@ Copy the `custom_components/kimai` folder into your Home Assistant `config/custo
 2. Search for "Kimai"
 3. Enter your Kimai instance URL, API user, and API token
 4. Optionally configure vacation activity IDs (comma-separated) to enable day-off detection
+5. Set the required minutes per workday (default: 480 = 8 hours)
 
 ## API Token
 

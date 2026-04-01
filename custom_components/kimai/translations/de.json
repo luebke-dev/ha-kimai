@@ -8,7 +8,8 @@
           "base_url": "Kimai URL",
           "api_user": "Benutzername",
           "api_token": "API Token",
-          "vacation_activity_ids": "Urlaubs-Activity-IDs (kommagetrennt)"
+          "vacation_activity_ids": "Urlaubs-Activity-IDs (kommagetrennt)",
+          "required_minutes_per_day": "Erforderliche Minuten pro Arbeitstag"
         }
       }
     },

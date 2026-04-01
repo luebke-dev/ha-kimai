@@ -27,6 +27,7 @@ class KimaiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         hass: HomeAssistant,
         api: KimaiApi,
         vacation_activity_ids: list[int],
+        required_minutes_per_day: int = 480,
     ) -> None:
         super().__init__(
             hass,
@@ -36,6 +37,7 @@ class KimaiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
         self.api = api
         self.vacation_activity_ids = vacation_activity_ids
+        self.required_minutes_per_day = required_minutes_per_day
 
     async def _async_update_data(self) -> dict[str, Any]:
         try:
@@ -51,10 +53,24 @@ class KimaiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 size=100,
             )
 
+            # Today's tracked duration in minutes
+            today_duration_seconds = self._sum_duration(today_timesheets)
+            today_duration_minutes = today_duration_seconds // 60
+
             # Check if today is a day off (weekend or vacation/holiday activity)
             is_weekend = today.weekday() in WEEKEND_DAYS
             today_vacation_entries = self._filter_vacation_entries(today_timesheets)
             is_day_off = is_weekend or len(today_vacation_entries) > 0
+
+            # Work time fulfilled and missing minutes (always fulfilled on days off)
+            if is_day_off:
+                missing_minutes = 0
+                work_time_fulfilled = True
+                overtime_minutes = today_duration_minutes
+            else:
+                missing_minutes = max(0, self.required_minutes_per_day - today_duration_minutes)
+                work_time_fulfilled = missing_minutes == 0
+                overtime_minutes = max(0, today_duration_minutes - self.required_minutes_per_day)
 
             # Fetch future vacation dates for next_day_off and next_workday
             future_vacation_dates = await self._get_future_vacation_dates(today)
@@ -69,6 +85,10 @@ class KimaiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 "is_day_off": is_day_off,
                 "next_day_off": next_day_off,
                 "next_workday": next_workday,
+                "today_duration_minutes": today_duration_minutes,
+                "missing_minutes": missing_minutes,
+                "overtime_minutes": overtime_minutes,
+                "work_time_fulfilled": work_time_fulfilled,
             }
         except KimaiApiError as err:
             raise UpdateFailed(f"Error fetching Kimai data: {err}") from err
@@ -118,6 +138,11 @@ class KimaiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 return day
             day += timedelta(days=1)
         return today + timedelta(days=1)
+
+    @staticmethod
+    def _sum_duration(timesheets: list[dict]) -> int:
+        """Sum duration of timesheets in seconds."""
+        return sum(t.get("duration", 0) or 0 for t in timesheets)
 
     def _filter_vacation_entries(self, timesheets: list[dict]) -> list[dict]:
         """Filter timesheets to only vacation/holiday activity entries."""

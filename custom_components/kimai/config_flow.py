@@ -16,7 +16,9 @@ from .const import (
     CONF_API_TOKEN,
     CONF_API_USER,
     CONF_BASE_URL,
+    CONF_REQUIRED_MINUTES_PER_DAY,
     CONF_VACATION_ACTIVITY_IDS,
+    DEFAULT_REQUIRED_MINUTES,
     DOMAIN,
 )
 
@@ -28,6 +30,9 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_API_USER): str,
         vol.Required(CONF_API_TOKEN): str,
         vol.Optional(CONF_VACATION_ACTIVITY_IDS, default=""): str,
+        vol.Optional(
+            CONF_REQUIRED_MINUTES_PER_DAY, default=DEFAULT_REQUIRED_MINUTES
+        ): int,
     }
 )
 
@@ -84,6 +89,9 @@ class KimaiConfigFlow(ConfigFlow, domain=DOMAIN):
                         CONF_API_USER: user_input[CONF_API_USER],
                         CONF_API_TOKEN: user_input[CONF_API_TOKEN],
                         CONF_VACATION_ACTIVITY_IDS: vacation_ids,
+                        CONF_REQUIRED_MINUTES_PER_DAY: user_input.get(
+                            CONF_REQUIRED_MINUTES_PER_DAY, DEFAULT_REQUIRED_MINUTES
+                        ),
                     },
                 )
 
